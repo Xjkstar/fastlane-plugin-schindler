@@ -14,13 +14,23 @@ fastlane add_plugin schindler
 
 Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.
 
-**Note to author:** Add a more detailed description about this plugin here. If your plugin contains multiple actions, make sure to mention them here.
-
 ## Example
 
 Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`.
 
-**Note to author:** Please set up a sample project to make it easy for users to explore what your plugin does. Provide everything that is necessary to try out the plugin in this project (including a sample Xcode/Android project if necessary)
+```ruby
+# A sample Fastfile
+lane :test do
+  schindler(
+    filter_type: "7",                   # Optional, '1'-Not installed, '2'-Expired, '4'-Unused, '7'-All(1 | 2 | 4), default 7
+    auto_confirm: "auto",               # Optional, 'auto'-skip, default no. Skip the second confirmation, or wait for user confirmation before deleting after scanning
+    user_id: "xjk_001@163.com",         # Your AppID for login App Store Connect
+    user_password: "********",          # AppID password, support App private password
+    ios_app_id: "11112222"              # The ID of the app in the Apple Store
+  )
+end
+
+```
 
 ## Run tests for this plugin
 
