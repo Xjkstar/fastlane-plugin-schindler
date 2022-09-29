@@ -48,7 +48,7 @@ end
 ```bash
 fastlane delete
 ```
-![result](https://github.com/Xjkstar/fastlane-plugin-schindler/raw/master/Assert/demo1.png)
+![result](https://github.com/Xjkstar/fastlane-plugin-schindler/blob/master/Assert/demo1.jpg)
 
 ## Run tests for this plugin
 
