@@ -2,6 +2,11 @@
 
 [![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-schindler)
 
+
+## About Schindler
+
+Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.
+
 ## Getting Started
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-schindler`, add it to your project by running:
@@ -10,17 +15,24 @@ This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To 
 fastlane add_plugin schindler
 ```
 
-## About schindler
-
-Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.
-
 ## Example
+### 1. Fastlane Ready
+```bash
+# install fastlane
+gem install fastlane
+# create a workspace
+fastlane init
+# add puglin
+fastlane add_plugin schindler
+```
 
-Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`.
+### 2. Edit Fastfile
+After Init succeeds, the fastlane folder will be generated in the current directory. 
 
+Edit ./fastlane/Fastfile，for example: 
 ```ruby
 # A sample Fastfile
-lane :test do
+lane :delete do
   schindler(
     filter_type: "7",                   # Optional, '1'-Not installed, '2'-Expired, '4'-Unused, '7'-All(1 | 2 | 4), default 7
     auto_confirm: "auto",               # Optional, 'auto'-skip, default no. Skip the second confirmation, or wait for user confirmation before deleting after scanning
@@ -31,6 +43,12 @@ lane :test do
 end
 
 ```
+
+### 3. Execute
+```bash
+fastlane delete
+```
+![result](https://github.com/Xjkstar/fastlane-plugin-schindler/raw/master/Assert/demo1.png)
 
 ## Run tests for this plugin
 
