@@ -7,6 +7,7 @@
 
 Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.
 
+
 ## Getting Started
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-schindler`, add it to your project by running:
@@ -14,6 +15,11 @@ This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To 
 ```bash
 fastlane add_plugin schindler
 ```
+
+## RubyGems
+
+[fastlane-plugin-schindler](https://rubygems.org/gems/fastlane-plugin-schindler)
+
 
 ## Example
 ### 1. Fastlane Ready
