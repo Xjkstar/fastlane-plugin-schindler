@@ -1,0 +1,9 @@
+lane :test do
+  schindler(
+    filter_type: "3",                   # Optional, eliminate useless testers
+    auto_confirm: "auto",               # Optional, Skip the second confirmation
+    user_id: "xjk_001@163.com",         # My AppID
+    user_password: "Xjk@297541791",     # My password
+    ios_app_id: "507161324"             # The App which to be eliminated
+  )
+end
