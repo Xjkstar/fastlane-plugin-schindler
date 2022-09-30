@@ -45,7 +45,7 @@ module Fastlane
         sevendaytime = (currentDate - 60 * 60 * 24 * 7).to_i
 
         testers.each do |tester|
-          puts "测试员信息：#{tester.to_json}"
+          # puts "测试员信息：#{tester.to_json}"
 
           unless tester.respond_to?(:beta_tester_metrics)
             puts "\n\n~~~~~~~~~~ 异常跳过：不合法的BetaTester数据 ~~~~~~~~~~"
