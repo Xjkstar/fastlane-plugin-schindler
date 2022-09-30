@@ -13,6 +13,7 @@ bundle install
 rake install
 rake release
 ```
+5. Edit ./fastlane/plugin/schindler/version when publich one more time
 
 Now all your users can run fastlane add_plugin [plugin_name] to install and use your plugin.
 

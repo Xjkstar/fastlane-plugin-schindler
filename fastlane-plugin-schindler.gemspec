@@ -1,4 +1,4 @@
-lib = File.expand_path("lib", __dir__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fastlane/plugin/schindler/version'
 
@@ -9,10 +9,10 @@ Gem::Specification.new do |spec|
   spec.email         = 'xjk_001@163.com'
 
   spec.summary       = 'Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.'
-  spec.homepage      = "https://github.com/Xjkstar/fastlane-plugin-schindler"
-  spec.license       = "MIT"
+  spec.homepage      = 'https://github.com/Xjkstar/fastlane-plugin-schindler'
+  spec.license       = 'MIT'
 
-  spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
+  spec.files         = Dir['lib/**/*'] + %w[README.md LICENSE]
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
