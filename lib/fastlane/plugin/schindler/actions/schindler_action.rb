@@ -24,8 +24,7 @@ module Fastlane
 
         # 先扫描未安装、已过期
         if (filter_type & Filter_Uninstall > 0) || (filter_type & Filter_Expire > 0)
-          add_process_uninstall_expired(filter_type: filter_type, auto_confirm: auto_confirm, ios_app_id: ios_app_id,
-                                        user_id: user_id, user_password: user_password)
+          add_process_uninstall_expired(filter_type: filter_type, auto_confirm: auto_confirm, params: params)
         end
         # 再扫描未使用，因为未使用需要全量查询，耗时1小时起步，容易超时
         # if filter_type & Filter_UnUse > 0
@@ -161,9 +160,12 @@ module Fastlane
       #   puts "Success，删除#{ids.size}个测试人员成功\n================================"
       # end
 
-      def self.add_process_uninstall_expired(filter_type: (Filter_Uninstall | Filter_Expire), auto_confirm: false, ios_app_id: nil, user_id: nil, user_password: nil)
-        itc_team_id = params[:portal_team_id].to_s
-        team_id = params[:itc_team_id].to_s
+      def self.add_process_uninstall_expired(filter_type: (Filter_Uninstall | Filter_Expire), auto_confirm: false, params: nil)
+        user_id = params[:user_id].to_s
+        user_password = params[:user_password].to_s
+        ios_app_id = params[:ios_app_id].to_s
+        team_id = params[:portal_team_id].to_s
+        itc_team_id = params[:itc_team_id].to_s
         # 每次查询Top 50，直到没有符合的记录，适合按状态排序后的扫描
         client = Spaceship::ConnectAPI::Client.login(user_id, user_password, portal_team_id: team_id, tunes_team_id: itc_team_id)
         puts 'ConnectAPI 登录成功'
@@ -172,7 +174,9 @@ module Fastlane
         while true
           puts "#{DateTime.now.to_time} 开始获取测试人员列表，带薪喝茶时间……"
           testers = client.get_beta_testers(filter: { apps: ios_app_id, isDeleted: false },
-                                            includes: 'betaTesterMetrics', sort: 'betaTesterMetrics.betaTesterState')
+                                            includes: 'betaTesterMetrics', 
+                                            sort: 'betaTesterMetrics.betaTesterState', 
+                                            limit: 100)
 
           puts "#{DateTime.now.to_time} 获取测试人员列表成功，共#{testers.count}个"
 
