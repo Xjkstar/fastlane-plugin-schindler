@@ -28,10 +28,10 @@ module Fastlane
                                         user_id: user_id, user_password: user_password)
         end
         # 再扫描未使用，因为未使用需要全量查询，耗时1小时起步，容易超时
-        if filter_type & Filter_UnUse > 0
-          add_process_unused(auto_confirm: auto_confirm, ios_app_id: ios_app_id, user_id: user_id,
-                             user_password: user_password)
-        end
+        # if filter_type & Filter_UnUse > 0
+        #   add_process_unused(auto_confirm: auto_confirm, ios_app_id: ios_app_id, user_id: user_id,
+        #                      user_password: user_password)
+        # end
       end
 
       def self.exec_process(testers, filter_type, auto_confirm)
@@ -47,35 +47,35 @@ module Fastlane
         testers.each do |tester|
           # puts "测试员信息：#{tester.to_json}"
 
-          unless tester.respond_to?(:beta_tester_metrics)
+          unless tester.respond_to?(:beta_tester_state)
             puts "\n\n~~~~~~~~~~ 异常跳过：不合法的BetaTester数据 ~~~~~~~~~~"
             next
           end
 
           id = tester.id.to_s
-          metric = (tester.beta_tester_metrics || []).first
-          tester_state = metric.beta_tester_state
+          tester_state = tester.beta_tester_state
           puts "测试员：#{tester.id} 状态-#{tester_state}"
 
-          if metric.installed?
-            modified_date = string2date(metric.last_modified_date)
+          if tester.beta_tester_state == "INSTALLED"
+            modified_date = string2date(tester.last_modified_date)
             next if modified_date.nil?
 
             last_date = modified_date.getlocal.to_i
             puts "最后更新时间：#{modified_date}"
             # 在sevenDaySessionCount支持前，暂时用session_count + lastModifiedDate
-            count = metric.session_count.to_i
+            # session_count被苹果废弃， by hongtao 2023/08/09
+            # count = tester.session_count.to_i
 
             if (filter_type & Filter_Expire) > 0 && last_date < expiredtime
               # 过期
               ids << id
 
               puts '===== 已过期 +1 ====='
-            elsif (filter_type & Filter_UnUse) > 0 && count < 1 && last_date < sevendaytime
-              # 超过7天未使用
-              ids << id
+            # elsif (filter_type & Filter_UnUse) > 0 && count < 1 && last_date < sevendaytime
+            #   # 超过7天未使用
+            #   ids << id
 
-              puts '===== 未使用 +1 ====='
+            #   puts '===== 未使用 +1 ====='
             end
           elsif filter_type & Filter_Uninstall > 0
             ids << id
@@ -98,7 +98,7 @@ module Fastlane
           end
         end
 
-        ids
+        return ids
       end
 
       def self.string2date(origin_date_string)
@@ -131,38 +131,44 @@ module Fastlane
         modified_date
       end
 
-      def self.add_process_unused(auto_confirm: false, ios_app_id: nil, user_id: nil, user_password: nil)
-        # 查询全量数据，但容易超时，未使用的用户只能全量查询
-        puts "#{DateTime.now.to_time} 开始获取App数据……"
-        app = Spaceship::ConnectAPI::App.get(app_id: ios_app_id)
+      # def self.add_process_unused(auto_confirm: false, ios_app_id: nil, user_id: nil, user_password: nil)
+      #   # 查询全量数据，但容易超时，未使用的用户只能全量查询
+      #   puts "#{DateTime.now.to_time} 开始获取App数据……"
+      #   app = Spaceship::ConnectAPI::App.get(app_id: ios_app_id)
 
-        puts "#{DateTime.now.to_time} 开始获取测试人员列表，带薪喝茶时间……"
-        testers = nil
-        if app
-          puts 'App get_beta_testers'
-          testers = app.get_beta_testers(filter: { apps: ios_app_id, isDeleted: false }, includes: 'betaTesterMetrics',
-                                         sort: 'betaTesterMetrics.betaTesterState', limit: 20)
-        else
-          puts 'Spaceship::ConnectAPI::BetaTester'
-          testers = Spaceship::ConnectAPI::BetaTester.all(filter: { apps: ios_app_id, isDeleted: false },
-                                                          includes: 'betaTesterMetrics', sort: 'betaTesterMetrics.betaTesterState', limit: 20)
-        end
-        puts "#{DateTime.now.to_time} 获取测试人员列表成功，共#{testers.count}个"
+      #   puts "#{DateTime.now.to_time} 开始获取测试人员列表，带薪喝茶时间……"
+      #   testers = nil
+      #   if app
+      #     puts 'App get_beta_testers'
+      #     testers = app.get_beta_testers(filter: { apps: ios_app_id, isDeleted: false }, includes: 'betaTesterMetrics',
+      #                                    sort: 'betaTesterMetrics.betaTesterState', limit: 20)
+      #   else
+      #     puts 'Spaceship::ConnectAPI::BetaTester'
+      #     testers = Spaceship::ConnectAPI::BetaTester.all(filter: { apps: ios_app_id, isDeleted: false },
+      #                                                     includes: 'betaTesterMetrics', sort: 'betaTesterMetrics.betaTesterState', limit: 200)
+      #   end
+      #   puts "#{DateTime.now.to_time} 获取测试人员列表成功，共#{testers.count}个"
 
-        ids = exec_process(testers, Filter_UnUse, auto_confirm)
-        return if ids.size < 1
+      #   ids = exec_process(testers, Filter_UnUse, auto_confirm)
+      #   return if ids.size < 1
 
-        client = Spaceship::ConnectAPI::Client.login(user_id, user_password)
-        puts '登录成功'
-        client.delete_beta_testers_from_app(beta_tester_ids: ids, app_id: ios_app_id)
-        puts "Success，删除#{ids.size}个测试人员成功\n================================"
-      end
+      #   itc_team_id = '82324800'
+      #   team_id = "9SR35Y6UHD"
+      #   # 每次查询Top 50，直到没有符合的记录，适合按状态排序后的扫描
+      #   client = Spaceship::ConnectAPI::Client.login(user_id, user_password, portal_team_id: team_id, tunes_team_id: itc_team_id)
+      #   puts '登录成功'
+      #   client.delete_beta_testers_from_app(beta_tester_ids: ids, app_id: ios_app_id)
+      #   puts "Success，删除#{ids.size}个测试人员成功\n================================"
+      # end
 
       def self.add_process_uninstall_expired(filter_type: (Filter_Uninstall | Filter_Expire), auto_confirm: false, ios_app_id: nil, user_id: nil, user_password: nil)
+        itc_team_id = params[:portal_team_id].to_s
+        team_id = params[:itc_team_id].to_s
         # 每次查询Top 50，直到没有符合的记录，适合按状态排序后的扫描
-        client = Spaceship::ConnectAPI::Client.login(user_id, user_password)
-        puts '登录成功'
+        client = Spaceship::ConnectAPI::Client.login(user_id, user_password, portal_team_id: team_id, tunes_team_id: itc_team_id)
+        puts 'ConnectAPI 登录成功'
 
+        deleteCount = 0
         while true
           puts "#{DateTime.now.to_time} 开始获取测试人员列表，带薪喝茶时间……"
           testers = client.get_beta_testers(filter: { apps: ios_app_id, isDeleted: false },
@@ -176,9 +182,15 @@ module Fastlane
             return
           end
 
-          client.delete_beta_testers_from_app(beta_tester_ids: ids, app_id: ios_app_id)
-          puts "Success，删除#{ids.size}个测试人员成功\n================================"
+          begin
+            client.delete_beta_testers_from_app(beta_tester_ids: ids, app_id: ios_app_id)
+            rescue => e
+              puts "delete error, but the program continues to execute. exception detail: #{e}"
+          end
+          deleteCount = deleteCount + ids.size
         end
+
+        puts "Success，删除#{deleteCount}个测试人员成功\n================================"
       end
 
       #####################################################
@@ -199,20 +211,20 @@ module Fastlane
 
       def self.details
         # Optional:
-        'Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.'
+        'Remove TestFlight testers that are not actually testing your app. Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS App.'
       end
 
       def self.available_options
         [
           FastlaneCore::ConfigItem.new(key: :filter_type,
                                        env_name: 'SCHINDLER_FILTER_TYPE',
-                                       description: "'1'-Not installed, '2'-Expired, '4'-Unused, '7'-All(1 | 2 | 4), default 7",
+                                       description: "'1'-Not installed, '2'-Expired, '3'-All(1 | 2), default 7",
                                        optional: true,
-                                       default_value: '7',
+                                       default_value: '3',
                                        type: String),
           FastlaneCore::ConfigItem.new(key: :auto_confirm,
                                        env_name: 'SCHINDLER_AUTO_CONFIRM',
-                                       description: "'auto'-skip, default no. Skip the second confirmation, or wait for user confirmation before deleting after scanning",
+                                       description: "'auto'-skip, default no. Skip the second confirmation, or wait for user confirmation before deleting after scanning (optional)",
                                        optional: true,
                                        default_value: 'none',
                                        type: String),
@@ -223,14 +235,24 @@ module Fastlane
                                        type: String),
           FastlaneCore::ConfigItem.new(key: :user_password,
                                        env_name: 'SCHINDLER_PASSWORD',
-                                       description: 'AppID password, support App private password',
-                                       optional: false,
+                                       description: 'AppID password, support App private password (optional)',
+                                       optional: true,
                                        type: String),
           FastlaneCore::ConfigItem.new(key: :ios_app_id,
                                        env_name: 'SCHINDLER_APP_ID',
                                        description: 'The ID of the app in the Apple Store',
                                        optional: false,
-                                       type: String)
+                                       type: String),
+          FastlaneCore::ConfigItem.new(key: :portal_team_id,
+                                       env_name: 'SCHINDLER_PORTAL_TEAM_ID',
+                                       description: 'Developer Portal Team ID (optional)',
+                                       optional: true,
+                                       type: String),
+          FastlaneCore::ConfigItem.new(key: :itc_team_id,
+                                      env_name: 'SCHINDLER_ITC_TEAM_ID',
+                                      description: 'App Store Connect Team ID (optional)',
+                                      optional: true,
+                                      type: String)
         ]
       end
 
@@ -245,11 +267,13 @@ module Fastlane
       def self.example_code
         [
           'schindler(
-            filter_type: "7",               # Optional, eliminate useless testers
+            filter_type: "3",               # Optional, eliminate useless testers
             auto_confirm: "auto",           # Optional, Skip the second confirmation
             user_id: "my_username",         # My AppID
-            user_password: "my_password",   # My password
-            ios_app_id: "my_ios_app"        # The App which to be eliminated
+            user_password: "my_password",   # Optional, My password
+            ios_app_id: "my_ios_app",       # The App which to be eliminated
+            portal_team_id: "my_team_id",   # Optional, Developer Portal Team ID
+            itc_team_id: "my_itc_team_id"   # Optional, App Store Connect Team ID
           )'
         ]
       end

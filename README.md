@@ -40,11 +40,13 @@ Edit ./fastlane/Fastfile，for example:
 # A sample Fastfile
 lane :delete do
   schindler(
-    filter_type: "7",                   # Optional, '1'-Not installed, '2'-Expired, '4'-Unused, '7'-All(1 | 2 | 4), default 7
+    filter_type: "3",                   # Optional, '1'-Not installed, '2'-Expired, '7'-All(1 | 2), default 3
     auto_confirm: "auto",               # Optional, 'auto'-skip, default no. Skip the second confirmation, or wait for user confirmation before deleting after scanning
     user_id: "xjk_001@163.com",         # Your AppID for login App Store Connect
-    user_password: "********",          # AppID password, support App private password
-    ios_app_id: "11112222"              # The ID of the app in the Apple Store
+    user_password: "********",          # Optional, AppID password
+    ios_app_id: "11112222",             # The ID of the app in the Apple Store
+    portal_team_id: "my_team_id",       # Optional, Developer Portal Team ID
+    itc_team_id: "my_itc_team_id"       # Optional, App Store Connect Team ID
   )
 end
 
