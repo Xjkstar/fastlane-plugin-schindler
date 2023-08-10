@@ -85,7 +85,7 @@ rubocop -a
 ## Extras(important by 08/10/2023)
 Due to changes in App Store Connect API 2.4, beta_tester_metrics for betaTesters in Spaceship are invalid, resulting in Tester status information no longer being available.
 
-Based on the betaTesters interface (appstoreconnect.apple.com/iris/v1/betaTesters), I updated this repository. And [submitted the commit to fastlane](https://github.com/fastlane/fastlane/pull/21452).
+Based on the betaTesters interface (appstoreconnect.apple.com/iris/v1/betaTesters), I updated this repository. And [submitted the commit to fastlane](https://github.com/fastlane/fastlane/pull/21453).
 
 Consider that it takes time and days for the commit to go through, so while waiting for it to go through, if you get an error running this script, scroll down.
 
