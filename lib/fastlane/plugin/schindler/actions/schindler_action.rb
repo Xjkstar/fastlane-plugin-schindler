@@ -11,7 +11,7 @@ module Fastlane
       Filter_UnUse = 1 << 2
 
       def self.run(params)
-        UI.message('The schindler plugin is working!')
+        UI.message('The schindler plugin is working!🚀🚀🚀')
 
         ARGV.clear
 
@@ -20,7 +20,9 @@ module Fastlane
         user_id = params[:user_id].to_s
         user_password = params[:user_password].to_s
         ios_app_id = params[:ios_app_id].to_s
-        puts "================================\n新建名单，初始化参数信息：\n筛选类型(位运算)：#{filter_type}  (#{Filter_Uninstall}-未安装，#{Filter_Expire}-已过期，#{Filter_UnUse}-未使用)\n跳过二次确认：#{auto_confirm}\n账号：#{user_id}\n密码：******\n应用ID：#{ios_app_id}\n================================"
+        portal_team_id = params[:portal_team_id].to_s
+        itc_team_id = params[:itc_team_id].to_s
+        puts "================================\nNew task begin, initialize parameter information: \nFilter type (bit operation): #{filter_type}  (#{Filter_Uninstall}-Uninstall，#{Filter_Expire}-Expire，#{Filter_UnUse}-UnUse)\nSkip secondary confirmation: #{auto_confirm}\nUserID: #{user_id}\nPassword: ******\nAppID: #{ios_app_id}\nPortal Team ID: #{portal_team_id}\nITC Team ID: #{itc_team_id}\n================================"
 
         # 先扫描未安装、已过期
         if (filter_type & Filter_Uninstall > 0) || (filter_type & Filter_Expire > 0)
@@ -47,20 +49,25 @@ module Fastlane
           # puts "测试员信息：#{tester.to_json}"
 
           unless tester.respond_to?(:beta_tester_state)
-            puts "\n\n~~~~~~~~~~ 异常跳过：不合法的BetaTester数据 ~~~~~~~~~~"
+            puts "\n\n~~~~~~~~~~ 🏃Exception skip: illegal BetaTester data ~~~~~~~~~~"
+            next
+          end
+
+          unless tester.invite_type == 'PUBLIC_LINK'
+            puts "\n\n~~~~~~~~~~ 🏃Ignore: Only delete testers invited by the public link ~~~~~~~~~~"
             next
           end
 
           id = tester.id.to_s
           tester_state = tester.beta_tester_state
-          puts "测试员：#{tester.id} 状态-#{tester_state}"
+          puts "TesterID：#{tester.id} state-#{tester_state}"
 
           if tester.beta_tester_state == "INSTALLED"
             modified_date = string2date(tester.last_modified_date)
             next if modified_date.nil?
 
             last_date = modified_date.getlocal.to_i
-            puts "最后更新时间：#{modified_date}"
+            puts "last_modified_date：#{modified_date}"
             # 在sevenDaySessionCount支持前，暂时用session_count + lastModifiedDate
             # session_count被苹果废弃， by hongtao 2023/08/09
             # count = tester.session_count.to_i
@@ -69,30 +76,30 @@ module Fastlane
               # 过期
               ids << id
 
-              puts '===== 已过期 +1 ====='
+              puts '===== 🐷Expire +1 ====='
             # elsif (filter_type & Filter_UnUse) > 0 && count < 1 && last_date < sevendaytime
             #   # 超过7天未使用
             #   ids << id
 
-            #   puts '===== 未使用 +1 ====='
+            #   puts '===== 🐷未使用 +1 ====='
             end
           elsif filter_type & Filter_Uninstall > 0
             ids << id
 
-            puts '===== 未安装 +1 ====='
+            puts '===== 🐷Uninstall +1 ====='
           end
         end
 
-        puts "\n测试员筛选完成\n================================"
+        puts "\nTester screening completed\n================================"
         if ids.size < 1
-          puts "当前规则下，测试员已经删完干净了\n================================"
+          puts "🎉Under the current rules, the testers have deleted🎉\n================================"
           return []
         end
 
         unless auto_confirm
-          puts "删除TestFlight测试员：#{ids.size}个？ (Y/n)"
+          puts "Delete TestFlight tester count: #{ids.size}？ (Y/n)"
           if gets.chomp != 'Y'
-            puts "Cancel，任务取消，此次任务结束\n================================"
+            puts "Cancel，Task cancel, this task is over\n================================"
             return []
           end
         end
@@ -168,33 +175,33 @@ module Fastlane
         itc_team_id = params[:itc_team_id].to_s
         # 每次查询Top 50，直到没有符合的记录，适合按状态排序后的扫描
         client = Spaceship::ConnectAPI::Client.login(user_id, user_password, portal_team_id: team_id, tunes_team_id: itc_team_id)
-        puts 'ConnectAPI 登录成功'
+        puts 'ConnectAPI login success🎉'
 
         deleteCount = 0
         while true
-          puts "#{DateTime.now.to_time} 开始获取测试人员列表，带薪喝茶时间……"
+          puts "#{DateTime.now.to_time} Start getting a list of testers, take a cup of tea🍵……"
           testers = client.get_beta_testers(filter: { apps: ios_app_id, isDeleted: false },
                                             includes: 'betaTesterMetrics', 
                                             sort: 'betaTesterMetrics.betaTesterState', 
                                             limit: 100)
 
-          puts "#{DateTime.now.to_time} 获取测试人员列表成功，共#{testers.count}个"
+          puts "#{DateTime.now.to_time} Get tester list complete, #{testers.count} in count"
 
           ids = exec_process(testers, filter_type, auto_confirm)
           if ids.size < 1
-            puts "未安装 or 已过期 测试员清除完毕\n================================"
-            return
+            puts "Uninstall or Expired Tester cleared🎉🎉🎉\n================================"
+            break
           end
 
           begin
             client.delete_beta_testers_from_app(beta_tester_ids: ids, app_id: ios_app_id)
             rescue => e
-              puts "delete error, but the program continues to execute. exception detail: #{e}"
+              puts "delete error, but the program continues to execute🤔. exception detail: #{e}"
           end
           deleteCount = deleteCount + ids.size
         end
 
-        puts "Success，删除#{deleteCount}个测试人员成功\n================================"
+        puts "Success，deletion of #{deleteCount} testers successful🦋\n================================"
       end
 
       #####################################################
