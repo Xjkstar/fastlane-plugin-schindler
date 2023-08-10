@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.author        = 'xjkstar'
   spec.email         = 'xjk_001@163.com'
 
-  spec.summary       = 'Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.'
+  spec.summary       = 'Remove TestFlight testers that are not actually testing your app. Schindler is a TestFlight automatic processing tool, which is used to maintain the number of TestFlight quota, eliminate useless testers, and improve the external gray effect of iOS.'
   spec.homepage      = 'https://github.com/Xjkstar/fastlane-plugin-schindler'
   spec.license       = 'MIT'
 
