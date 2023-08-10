@@ -10,13 +10,13 @@ Schindler is a TestFlight automatic processing tool, which is used to maintain t
 ## Change Log
 
 | Date | Version | Content |
-|--|--|-------|
-| 2023-08-10 |1.1.0| 1. Adapts to App Store Connect API 2.4|
-||| 2. Remove only Publick link testers, as email tester cannot be removed|
-||| 3. No more deleting Unused testers|
-||| 4. Multi-group account friendly, providing optional parameters Developer Portal Team ID, App Store Connect Team ID|
-||| 5. Full English log|
-| 2022-09-30 |1.0.1| 1. Remove TestFlight testers that are not actually testing your app, support the following 3 categories: Uninstall, Expired, Unused|
+|----|-|------|
+|2023-08-10|1.1.0| 1. Adapts to App Store Connect API 2.4|
+|  |  | 2. Remove only Publick link testers, as email tester cannot be removed|
+|  |  | 3. No more deleting Unused testers|
+|  |  | 4. Multi-group account friendly, providing optional parameters Developer Portal Team ID, App Store Connect Team ID|
+|  |  | 5. Full English log|
+|2022-09-30|1.0.1| 1. Remove TestFlight testers that are not actually testing your app, support the following 3 categories: Uninstall, Expired, Unused|
 
 
 ## Getting Started
@@ -85,7 +85,7 @@ rubocop -a
 ## Extras(important by 08/10/2023)
 Due to changes in App Store Connect API 2.4, beta_tester_metrics for betaTesters in Spaceship are invalid, resulting in Tester status information no longer being available.
 
-Based on the betaTesters interface (appstoreconnect.apple.com/iris/v1/betaTesters), I updated this repository. And submitted the commit to fastlane.
+Based on the betaTesters interface (appstoreconnect.apple.com/iris/v1/betaTesters), I updated this repository. And [submitted the commit to fastlane](https://github.com/fastlane/fastlane/pull/21452).
 
 Consider that it takes time and days for the commit to go through, so while waiting for it to go through, if you get an error running this script, scroll down.
 
