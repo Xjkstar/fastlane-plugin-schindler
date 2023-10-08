@@ -94,14 +94,11 @@ First, we need to find the betaTesters file in the local fastlane
 
 ```shell
 # Get local gem folder path
-which fastlane
-# Assuming that the previous step yields '/Users/hongtao/.mtl-cli-env/gems/bin/fastlane'
+fastlane --version
+# Assuming that the previous step yields '/Users/hongtao/.rbenv/versions/2.7.4/lib/ruby/gems/2.7.0/gems/fastlane-2.210.1/bin/fastlane'
 
-# Further find the specific fastlane version, note that here you need to open the gem folder by deleting the path to fastlane (replace '/bin/fastlane' at the end with '/gems') and then append the path to gems (/gems).
-open /Users/hongtao/.mtl-cli-env/gems/gems
-
-# After opening finder, find the latest local version of fastlane, for example, the author's local is fastlane-2.214.0, drag this folder to the terminal window and append '/spaceship/lib/spaceship/connect_api/models/beta_tester.rb' to the end. , and then open this file
-open /Users/hongtao/.mtl-cli-env/gems/gems/fastlane-2.214.0/spaceship/lib/spaceship/connect_api/models/beta_tester.rb
+# Find the latest local version of fastlane, replace '/bin/fastlane' at the end with '/spaceship/lib/spaceship/connect_api/models/beta_tester.rb'. Then open it
+open /Users/hongtao/.rbenv/versions/2.7.4/lib/ruby/gems/2.7.0/gems/fastlane-2.210.1/spaceship/lib/spaceship/connect_api/models/beta_tester.rb
 ```
 
 ### Modify local fastlane
